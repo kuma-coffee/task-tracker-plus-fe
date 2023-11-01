@@ -180,7 +180,7 @@
           </div>
           <div class="ml-3">
             <div class="text-sm font-medium leading-none text-gray-400">
-              {{.email}}
+              {{ email }}
             </div>
           </div>
           <button

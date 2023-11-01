@@ -150,24 +150,24 @@
                 class="dropdown flex w-48 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 <summary class="m-1 btn">Filter by Category</summary>
-                <ul>
-                  {{range $key, $val := .categories}}
+                <ul v-for="category in categories" :key="category.id">
                   <li>
                     <a
-                      href="/client/task/category/{{$val.ID}}"
+                      href="/client/task/category/{{category.id}}"
                       class="block px-4 py-2 rounded-md hover:bg-white dark:hover:bg-white dark:hover:text-black"
                     >
-                      {{ $val.Name }}
+                      {{ category.name }}
                     </a>
                   </li>
-                  {{
-                    end
-                  }}
                 </ul>
               </details>
             </div>
-            <ul role="list" class="divide-y divide-gray-100">
-              {{range $key, $val := .tasks}}
+            <ul
+              v-for="task in tasks"
+              :key="task.id"
+              role="list"
+              class="divide-y divide-gray-100"
+            >
               <li class="flex justify-between gap-x-6 py-5">
                 <div class="flex gap-x-4">
                   <img
@@ -177,21 +177,21 @@
                   />
                   <div class="min-w-0 flex-auto">
                     <p class="text-sm font-semibold leading-6 text-gray-900">
-                      {{ $val.Title }}
+                      {{ task.title }}
                     </p>
                     <p class="mt-1 truncate text-xs leading-5 text-gray-500">
-                      Priority: {{ $val.Priority }}
+                      Priority: {{ task.priority }}
                     </p>
                     <div class="flex">
                       <div>
                         <a
-                          href="task/update/{{$val.ID}}"
+                          href="task/update/{{task.id}}"
                           class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                           >Edit</a
                         >
                       </div>
                       <form
-                        action="task/delete/process/{{$val.ID}}"
+                        action="task/delete/process/{{task.id}}"
                         method="post"
                         class="mx-1"
                       >
@@ -207,7 +207,7 @@
 
                       <!-- <div class="mx-1">
                           <a
-                            href="task/delete/process/{{$val.ID}}"
+                            href="task/delete/process/{{task.id}}"
                             class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >Delete</a
                           >
@@ -217,37 +217,39 @@
                 </div>
                 <div class="hidden sm:flex sm:flex-col sm:items-end">
                   <p class="text-sm leading-6 text-gray-900">
-                    CategoryID: <strong>{{ $val.CategoryID }}</strong> UserID:
-                    <strong>{{ $val.UserID }}</strong>
+                    CategoryID: <strong>{{ task.category_id }}</strong> UserID:
+                    <strong>{{ task.user_id }}</strong>
                   </p>
                   <p class="mt-1 text-xs leading-5 text-gray-500">
-                    Deadline <time>{{ $val.Deadline }}</time>
+                    Deadline <time>{{ task.deadline }}</time>
                   </p>
                   <div class="mt-1 flex items-center gap-x-1.5">
-                    {{if eq $val.Status "Completed"}}
-                    <div class="flex-none rounded-full bg-emerald-500/20 p-1">
+                    <div
+                      v-if="task.status === 'Completed'"
+                      class="flex-none rounded-full bg-emerald-500/20 p-1"
+                    >
                       <div
                         class="h-1.5 w-1.5 rounded-full bg-emerald-500"
                       ></div>
                     </div>
-                    {{else}}{{if eq $val.Status "In Progress"}}
-                    <div class="flex-none rounded-full bg-yellow-500/20 p-1">
+                    <div
+                      v-else-if="task.status === 'In Progress'"
+                      class="flex-none rounded-full bg-yellow-500/20 p-1"
+                    >
                       <div class="h-1.5 w-1.5 rounded-full bg-yellow-500"></div>
                     </div>
-                    {{else}}
-                    <div class="flex-none rounded-full bg-gray-500/20 p-1">
+                    <div
+                      v-else
+                      class="flex-none rounded-full bg-gray-500/20 p-1"
+                    >
                       <div class="h-1.5 w-1.5 rounded-full bg-gray-500"></div>
                     </div>
-                    {{ end }}{{ end }}
                     <p class="text-xs leading-5 text-gray-500">
-                      {{ $val.Status }}
+                      {{ task.status }}
                     </p>
                   </div>
                 </div>
               </li>
-              {{
-                end
-              }}
             </ul>
           </div>
         </div>
@@ -263,10 +265,45 @@ export default {
   data() {
     return {
       email: "",
+      tasks: [],
+      categories: [],
     };
   },
   components: {
     Navbar,
+  },
+  method: {
+    async getTaskList() {
+      await this.$be_http.get(`/api/v1/task/list`).then((resp) => {
+        this.tasks = [];
+        resp.data.data.tasks.forEach((element) => {
+          this.tasks.push({
+            id: element.id,
+            title: element.title,
+            deadline: element.deadline,
+            priority: element.priority,
+            status: element.status,
+            category_id: element.category_id,
+            user_id: element.user_id,
+          });
+        });
+      });
+    },
+    async getCategoryList() {
+      await this.$be_http.get(`/api/v1/category/list`).then((resp) => {
+        this.categories = [];
+        resp.data.data.categories.forEach((element) => {
+          this.categories.push({
+            id: element.id,
+            name: element.name,
+          });
+        });
+      });
+    },
+  },
+  mounted() {
+    this.getTaskList();
+    this.getCategoryList();
   },
 };
 </script>

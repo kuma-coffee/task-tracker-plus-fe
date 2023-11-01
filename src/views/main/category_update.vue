@@ -42,7 +42,7 @@
                     id="id"
                     name="id"
                     type="number"
-                    value="{{.category.ID}}"
+                    value="{{category.id}}"
                     readonly
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -60,7 +60,7 @@
                     id="name"
                     name="name"
                     type="text"
-                    value="{{.category.Name}}"
+                    value="{{category.name}}"
                     autocomplete="name"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -89,11 +89,34 @@ import Navbar from "../../components/navbar.vue";
 export default {
   data() {
     return {
+      id: null,
       email: "",
+      category: {
+        id: "",
+        name: "",
+      },
     };
   },
   components: {
     Navbar,
+  },
+  method: {
+    async getCategoryById() {
+      try {
+        this.id = this.$route.params.id;
+        const resp = await this.$be_http.get(`/api/v1/category/get/${this.id}`);
+        const data = resp.data;
+        this.category = {
+          id: data.id,
+          name: data.name,
+        };
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+  mounted() {
+    this.getCategoryById();
   },
 };
 </script>

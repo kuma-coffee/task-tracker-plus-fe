@@ -41,7 +41,7 @@
                     id="id"
                     name="id"
                     type="number"
-                    value="{{.task.ID}}"
+                    value="{{task.id}}"
                     readonly
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -58,7 +58,7 @@
                     id="title"
                     name="title"
                     type="text"
-                    value="{{.task.Title}}"
+                    value="{{task.title}}"
                     autocomplete="title"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -76,7 +76,7 @@
                     id="deadline"
                     name="deadline"
                     type="date"
-                    value="{{.task.Deadline}}"
+                    value="{{task.deadline}}"
                     autocomplete="deadline"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -94,7 +94,7 @@
                     id="priority"
                     name="priority"
                     type="number"
-                    value="{{.task.Priority}}"
+                    value="{{task.priority}}"
                     autocomplete="priority"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -112,7 +112,7 @@
                     id="status"
                     name="status"
                     type="text"
-                    value="{{.task.Status}}"
+                    value="{{task.status}}"
                     autocomplete="status"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -130,7 +130,7 @@
                     id="category_id"
                     name="category_id"
                     type="number"
-                    value="{{.task.CategoryID}}"
+                    value="{{task.category_id}}"
                     autocomplete="category_id"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -148,7 +148,7 @@
                     id="user_id"
                     name="user_id"
                     type="number"
-                    value="{{.task.UserID}}"
+                    value="{{task.user_id}}"
                     autocomplete="user_id"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -177,11 +177,44 @@ import Navbar from "../../components/navbar.vue";
 export default {
   data() {
     return {
+      id: null,
       email: "",
+      task: {
+        id: "",
+        title: "",
+        deadline: "",
+        priority: "",
+        status: "",
+        category_id: "",
+        user_id: "",
+      },
     };
   },
   components: {
     Navbar,
+  },
+  method: {
+    async getTaskById() {
+      try {
+        this.id = this.$route.params.id;
+        const resp = await this.$be_http.get(`/api/v1/task/get/${this.id}`);
+        const data = resp.data;
+        this.task = {
+          id: data.id,
+          title: data.title,
+          deadline: data.deadline,
+          priority: data.priority,
+          status: data.status,
+          category_id: data.category_id,
+          user_id: data.user_id,
+        };
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+  mounted() {
+    this.getTaskById();
   },
 };
 </script>

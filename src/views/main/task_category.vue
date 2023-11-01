@@ -150,24 +150,24 @@
                 class="dropdown flex w-48 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 <summary class="m-1 btn">Filter by Category</summary>
-                <ul>
-                  {{range $key, $val := .categories}}
+                <ul v-for="category in categories" :key="category.id">
                   <li>
                     <a
-                      href="/client/task/category/{{$val.ID}}"
+                      href="/client/task/category/{{category.id}}"
                       class="block px-4 py-2 rounded-md hover:bg-white dark:hover:bg-white dark:hover:text-black"
                     >
-                      {{ $val.Name }}
+                      {{ category.name }}
                     </a>
                   </li>
-                  {{
-                    end
-                  }}
                 </ul>
               </details>
             </div>
-            <ul role="list" class="divide-y divide-gray-100">
-              {{range $key, $val := .tasks}}
+            <ul
+              v-for="taskCategory in taskCategoryList"
+              :key="taskCategory.id"
+              role="list"
+              class="divide-y divide-gray-100"
+            >
               <li class="flex justify-between gap-x-6 py-5">
                 <div class="flex gap-x-4">
                   <img
@@ -177,22 +177,19 @@
                   />
                   <div class="min-w-0 flex-auto">
                     <p class="text-sm font-semibold leading-6 text-gray-900">
-                      {{ $val.Title }}
+                      {{ taskCategory.title }}
                     </p>
                   </div>
                 </div>
                 <div class="hidden sm:flex sm:flex-col sm:items-end">
                   <p class="text-sm leading-6 text-gray-900">
-                    TaskID: <strong>{{ $val.ID }}</strong>
+                    TaskID: <strong>{{ taskCategory.id }}</strong>
                   </p>
                   <p class="text-sm leading-6 text-gray-900">
-                    Category: <strong>{{ $val.Category }}</strong>
+                    Category: <strong>{{ taskCategory.category }}</strong>
                   </p>
                 </div>
               </li>
-              {{
-                end
-              }}
             </ul>
           </div>
         </div>
@@ -207,11 +204,45 @@ import Navbar from "../../components/navbar.vue";
 export default {
   data() {
     return {
+      id: null,
       email: "",
+      taskCategoryList: [],
+      categories: [],
     };
   },
   components: {
     Navbar,
+  },
+  method: {
+    async getTaskListByCategory() {
+      await this.$be_http
+        .get(`/api/v1/task/category/${this.id}`)
+        .then((resp) => {
+          this.taskCategory = [];
+          resp.data.data.taskCategory.forEach((element) => {
+            this.taskCategory.push({
+              id: element.id,
+              title: element.title,
+              category: element.category,
+            });
+          });
+        });
+    },
+    async getCategoryList() {
+      await this.$be_http.get(`/api/v1/category/list`).then((resp) => {
+        this.categories = [];
+        resp.data.data.categories.forEach((element) => {
+          this.categories.push({
+            id: element.id,
+            name: element.name,
+          });
+        });
+      });
+    },
+  },
+  mounted() {
+    this.getTaskListByCategory();
+    this.getCategoryList();
   },
 };
 </script>

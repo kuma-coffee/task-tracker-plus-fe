@@ -133,8 +133,8 @@ export default {
     Navbar,
   },
   method: {
-    async getCategories() {
-      await this$be_http.get("/api/v1/category/list").then((resp) => {
+    async getCategoryList() {
+      await this.$be_http.get(`/api/v1/category/list`).then((resp) => {
         this.categories = [];
         resp.data.data.categories.forEach((element) => {
           this.categories.push({
@@ -146,7 +146,7 @@ export default {
     },
   },
   mounted() {
-    this.getCategories();
+    this.getCategoryList();
   },
 };
 </script>
