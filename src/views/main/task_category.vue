@@ -211,7 +211,6 @@ export default {
       taskCategoryList: [],
       categories: [],
       form: {
-        id: "",
         title: "",
         deadline: "",
         priority: "",

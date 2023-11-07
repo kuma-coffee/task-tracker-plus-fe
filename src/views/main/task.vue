@@ -270,7 +270,6 @@ export default {
       tasks: [],
       categories: [],
       form: {
-        id: "",
         title: "",
         deadline: "",
         priority: "",
