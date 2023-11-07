@@ -84,21 +84,25 @@ export default {
   },
   methods: {
     async getUserTaskCategories() {
-      await this.$be_http.get("/api/v1/user/tasks").then((resp) => {
-        this.user_task_categories = [];
-        resp.data.data.user_task_categories.forEach((element) => {
-          this.user_task_categories.push({
-            id: element.id,
-            fullname: element.fullname,
-            email: element.email,
-            task: element.task,
-            deadline: element.deadline,
-            priority: element.priority,
-            status: element.status,
-            category: element.category,
-          });
-        });
+      // const token = VueCookies.get("session_token");
+      const resp = await this.$be_http.get("/api/v1/user/tasks", {
+        withCredentials: true,
       });
+      this.user_task_categories = [];
+      if (resp.data && Array.isArray(resp.data)) {
+        this.user_task_categories = resp.data.map((element) => ({
+          id: element.id,
+          fullname: element.fullname,
+          email: element.email,
+          task: element.task,
+          deadline: element.deadline,
+          priority: element.priority,
+          status: element.status,
+          category: element.category,
+        }));
+      } else {
+        console.error("Data tidak valid atau tidak ditemukan dalam respons.");
+      }
     },
   },
   mounted() {
