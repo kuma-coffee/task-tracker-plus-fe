@@ -28,7 +28,7 @@
           <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
             <form
               class="space-y-6"
-              action="/client/category/add/process"
+              @submit.prevent="addCategory()"
               method="POST"
             >
               <div>
@@ -43,6 +43,7 @@
                     name="name"
                     type="text"
                     autocomplete="name"
+                    v-model="form.name"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -80,13 +81,13 @@
                     <div class="flex">
                       <div>
                         <a
-                          href="category/update/${{category.id}}"
+                          @click="updateCategory(category.id)"
                           class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                           >Edit</a
                         >
                       </div>
                       <form
-                        action="category/delete/process/{{category.id}}"
+                        @submit.prevent="deleteCategory(category.id)"
                         method="post"
                         class="mx-1"
                       >
@@ -108,9 +109,6 @@
                   </p>
                 </div>
               </li>
-              {{
-                end
-              }}
             </ul>
           </div>
         </div>
@@ -127,22 +125,51 @@ export default {
     return {
       email: "",
       categories: [],
+      form: {
+        name: "",
+      },
     };
   },
   components: {
     Navbar,
   },
-  method: {
+  methods: {
     async getCategoryList() {
-      await this.$be_http.get(`/api/v1/category/list`).then((resp) => {
-        this.categories = [];
-        resp.data.data.categories.forEach((element) => {
-          this.categories.push({
-            id: element.id,
-            name: element.name,
-          });
-        });
+      const resp = await this.$be_http.get(`/api/v1/category/list`, {
+        withCredentials: true,
       });
+      this.categories = [];
+      if (resp.data && Array.isArray(resp.data)) {
+        this.categories = resp.data.map((element) => ({
+          id: element.id,
+          name: element.name,
+        }));
+      } else {
+        console.error("Data tidak valid atau tidak ditemukan dalam respons.");
+      }
+    },
+
+    async addCategory() {
+      try {
+        await this.$be_http.post(`/api/v1/category/add`, this.form, {
+          withCredentials: true,
+        });
+        await this.getCategoryList();
+      } catch (error) {
+        alert("Please fill in all available fields");
+        console.log(error);
+      }
+    },
+
+    async updateCategory(id) {
+      this.$router.push(`/client/category/update/${id}`);
+    },
+
+    async deleteCategory(id) {
+      await this.$be_http.delete(`/api/v1/category/delete/${id}`, {
+        withCredentials: true,
+      });
+      await this.getCategoryList();
     },
   },
   mounted() {
