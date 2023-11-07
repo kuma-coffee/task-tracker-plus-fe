@@ -10,7 +10,7 @@
       class="w-full max-w-md px-8 py-10 mt-4 text-left bg-white shadow-lg rounded-lg bg-opacity-90"
     >
       <h3 class="text-2xl font-bold text-center mb-6">Login to your account</h3>
-      <form method="POST" @submit.prevent="onSubmit">
+      <form method="POST" @submit.prevent="login()">
         <div>
           <div class="mt-4">
             <label class="block mb-2" for="email">Email</label>
@@ -65,7 +65,7 @@ export default {
     };
   },
   methods: {
-    async onSubmit() {
+    async login() {
       try {
         const resp = await this.$be_http.post("/api/v1/user/login", {
           email: this.user.email,

@@ -13,18 +13,18 @@
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
               <a
-                href="/client/dashboard"
+                :href="'/client/dashboard'"
                 class="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
                 aria-current="page"
                 >Dashboard</a
               >
               <a
-                href="/client/task"
+                :href="'/client/task'"
                 class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >Task</a
               >
               <a
-                href="/client/category"
+                :href="'/client/category'"
                 class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >Category</a
               >
@@ -98,7 +98,7 @@
                   >Settings</a
                 >
                 <a
-                  href="/client/logout"
+                  @click="logout()"
                   class="block px-4 py-2 text-sm text-gray-700"
                   role="menuitem"
                   tabindex="-1"
@@ -153,18 +153,18 @@
     <div class="md:hidden" id="mobile-menu">
       <div class="space-y-1 px-2 pb-3 pt-2 sm:px-3">
         <a
-          href="/client/dashboard"
+          :href="'/client/dashboard'"
           class="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium"
           aria-current="page"
           >Dashboard</a
         >
         <a
-          href="/client/task"
+          :href="'/client/task'"
           class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
           >Task</a
         >
         <a
-          href="/client/category"
+          :href="'/client/category'"
           class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
           >Category</a
         >
@@ -216,7 +216,7 @@
             >Settings</a
           >
           <a
-            href="/client/logout"
+            @click="logout()"
             class="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
             >Sign out</a
           >
@@ -227,6 +227,8 @@
 </template>
 
 <script>
+import VueCookies from "vue-cookies";
+
 export default {
   props: ["email"],
   data() {
@@ -236,8 +238,23 @@ export default {
   },
   methods: {
     toggleUserElement() {
+      console.log("Toggle user element called");
       this.userElementDisplay =
         this.userElementDisplay === "block" ? "none" : "block";
+    },
+
+    async logout() {
+      try {
+        const resp = await this.$be_http.get("/api/v1/user/logout", {
+          withCredentials: true,
+        });
+
+        VueCookies.set("session_token", "", -1, "", null, false);
+
+        this.$router.push("/", {});
+      } catch (error) {
+        this.$router.push(`/client/modal?status=error&message=${error}`);
+      }
     },
   },
 };
