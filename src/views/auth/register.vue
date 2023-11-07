@@ -10,7 +10,7 @@
       class="w-full max-w-md px-8 py-10 mt-4 text-left bg-white shadow-lg rounded-lg"
     >
       <h3 class="text-2xl font-bold text-center">Register account</h3>
-      <form method="POST" action="/client/register/process">
+      <form method="POST" @submit.prevent="onSubmit">
         <div>
           <div class="mt-4">
             <div>
@@ -20,6 +20,7 @@
                 placeholder="fullname"
                 class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 name="fullname"
+                v-model="user.fullname"
               />
             </div>
             <div class="mt-4">
@@ -29,6 +30,7 @@
                 placeholder="Email"
                 class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 name="email"
+                v-model="user.email"
               />
             </div>
             <div class="mt-4">
@@ -38,6 +40,7 @@
                 placeholder="Password"
                 class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
                 name="password"
+                v-model="user.password"
               />
             </div>
             <div class="flex items-baseline justify-between">
@@ -61,7 +64,32 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      user: {
+        fullname: "",
+        email: "",
+        password: "",
+      },
+    };
+  },
+  methods: {
+    async onSubmit() {
+      try {
+        await this.$be_http.post(`/api/v1/user/register`, {
+          fullname: this.user.fullname,
+          email: this.user.email,
+          password: this.user.password,
+        });
+
+        this.$router.push(`/client/login`);
+      } catch (error) {
+        this.$router.push(`/client/modal?status=error&message=${error}`);
+      }
+    },
+  },
+};
 </script>
 
 <style></style>

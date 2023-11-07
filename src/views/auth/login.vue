@@ -10,7 +10,7 @@
       class="w-full max-w-md px-8 py-10 mt-4 text-left bg-white shadow-lg rounded-lg bg-opacity-90"
     >
       <h3 class="text-2xl font-bold text-center mb-6">Login to your account</h3>
-      <form method="POST" action="/client/login/process">
+      <form method="POST" @submit.prevent="onSubmit">
         <div>
           <div class="mt-4">
             <label class="block mb-2" for="email">Email</label>
@@ -19,6 +19,7 @@
               placeholder="Email"
               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
               name="email"
+              v-model="user.email"
             />
           </div>
           <div class="mt-4">
@@ -28,6 +29,7 @@
               placeholder="Password"
               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
               name="password"
+              v-model="user.password"
             />
           </div>
           <div class="flex items-center justify-between mt-6">
@@ -51,7 +53,37 @@
 </template>
 
 <script>
-export default {};
+import VueCookies from "vue-cookies";
+
+export default {
+  data() {
+    return {
+      user: {
+        email: "",
+        password: "",
+      },
+    };
+  },
+  methods: {
+    async onSubmit() {
+      try {
+        const resp = await this.$be_http.post("/api/v1/user/login", {
+          email: this.user.email,
+          password: this.user.password,
+        });
+
+        VueCookies.set("session_token", resp.data.token, "1h", "", null, false);
+
+        this.$router.push("/client/dashboard", {
+          cookie: "session_token=" + resp.data.token,
+          withCredentials: true,
+        });
+      } catch (error) {
+        this.$router.push(`/client/modal?status=error&message=${error}`);
+      }
+    },
+  },
+};
 </script>
 
 <style></style>
