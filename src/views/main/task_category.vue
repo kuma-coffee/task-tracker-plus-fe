@@ -25,11 +25,7 @@
           </div>
 
           <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form
-              class="space-y-6"
-              action="/client/task/add/process"
-              method="POST"
-            >
+            <form class="space-y-6" @submit.prevent="addTask()" method="POST">
               <div>
                 <label
                   for="title"
@@ -42,6 +38,7 @@
                     name="title"
                     type="text"
                     autocomplete="title"
+                    v-model="form.title"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -59,6 +56,7 @@
                     name="deadline"
                     type="date"
                     autocomplete="deadline"
+                    v-model="form.deadline"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -76,6 +74,7 @@
                     name="priority"
                     type="number"
                     autocomplete="priority"
+                    v-model="form.priority"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -93,6 +92,7 @@
                     name="status"
                     type="text"
                     autocomplete="status"
+                    v-model="form.status"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -110,6 +110,7 @@
                     name="category_id"
                     type="number"
                     autocomplete="category_id"
+                    v-model="form.category_id"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -127,6 +128,7 @@
                     name="user_id"
                     type="number"
                     autocomplete="user_id"
+                    v-model="form.user_id"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -153,7 +155,7 @@
                 <ul v-for="category in categories" :key="category.id">
                   <li>
                     <a
-                      href="/client/task/category/{{category.id}}"
+                      :href="'/client/task/category/' + category.id"
                       class="block px-4 py-2 rounded-md hover:bg-white dark:hover:bg-white dark:hover:text-black"
                     >
                       {{ category.name }}
@@ -208,39 +210,67 @@ export default {
       email: "",
       taskCategoryList: [],
       categories: [],
+      form: {
+        id: "",
+        title: "",
+        deadline: "",
+        priority: "",
+        status: "",
+        category_id: "",
+        user_id: "",
+      },
     };
   },
   components: {
     Navbar,
   },
-  method: {
+  methods: {
     async getTaskListByCategory() {
-      await this.$be_http
-        .get(`/api/v1/task/category/${this.id}`)
-        .then((resp) => {
-          this.taskCategory = [];
-          resp.data.data.taskCategory.forEach((element) => {
-            this.taskCategory.push({
-              id: element.id,
-              title: element.title,
-              category: element.category,
-            });
-          });
-        });
-    },
-    async getCategoryList() {
-      await this.$be_http.get(`/api/v1/category/list`).then((resp) => {
-        this.categories = [];
-        resp.data.data.categories.forEach((element) => {
-          this.categories.push({
-            id: element.id,
-            name: element.name,
-          });
-        });
+      const resp = await this.$be_http.get(`/api/v1/task/category/${this.id}`, {
+        withCredentials: true,
       });
+      this.taskCategoryList = [];
+      if (resp.data && Array.isArray(resp.data)) {
+        this.taskCategoryList = resp.data.map((element) => ({
+          id: element.id,
+          title: element.title,
+          category: element.category,
+        }));
+      } else {
+        console.error("Data tidak valid atau tidak ditemukan dalam respons.");
+      }
+    },
+
+    async getCategoryList() {
+      const resp = await this.$be_http.get(`/api/v1/category/list`, {
+        withCredentials: true,
+      });
+      this.categories = [];
+      if (resp.data && Array.isArray(resp.data)) {
+        this.categories = resp.data.map((element) => ({
+          id: element.id,
+          name: element.name,
+        }));
+      } else {
+        console.error("Data tidak valid atau tidak ditemukan dalam respons.");
+      }
+    },
+
+    async addTask() {
+      try {
+        await this.$be_http.post(`/api/v1/task/add`, this.form, {
+          withCredentials: true,
+        });
+        await this.getTaskList();
+        await this.getCategoryList();
+      } catch (error) {
+        alert("Please fill in all available fields");
+        console.log(error);
+      }
     },
   },
   mounted() {
+    this.id = this.$route.params.id;
     this.getTaskListByCategory();
     this.getCategoryList();
   },

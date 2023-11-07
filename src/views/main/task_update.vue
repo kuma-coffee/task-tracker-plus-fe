@@ -27,7 +27,7 @@
           <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
             <form
               class="space-y-6"
-              action="/client/task/update/process"
+              @submit.prevent="updateTask(task.id)"
               method="POST"
             >
               <div>
@@ -41,7 +41,7 @@
                     id="id"
                     name="id"
                     type="number"
-                    value="{{task.id}}"
+                    v-model="task.id"
                     readonly
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -58,7 +58,7 @@
                     id="title"
                     name="title"
                     type="text"
-                    value="{{task.title}}"
+                    v-model="task.title"
                     autocomplete="title"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -76,7 +76,7 @@
                     id="deadline"
                     name="deadline"
                     type="date"
-                    value="{{task.deadline}}"
+                    v-model="task.deadline"
                     autocomplete="deadline"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -94,7 +94,7 @@
                     id="priority"
                     name="priority"
                     type="number"
-                    value="{{task.priority}}"
+                    v-model="task.priority"
                     autocomplete="priority"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -112,7 +112,7 @@
                     id="status"
                     name="status"
                     type="text"
-                    value="{{task.status}}"
+                    v-model="task.status"
                     autocomplete="status"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -130,7 +130,7 @@
                     id="category_id"
                     name="category_id"
                     type="number"
-                    value="{{task.category_id}}"
+                    v-model="task.category_id"
                     autocomplete="category_id"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -147,8 +147,8 @@
                   <input
                     id="user_id"
                     name="user_id"
+                    v-model="task.user_id"
                     type="number"
-                    value="{{task.user_id}}"
                     autocomplete="user_id"
                     required
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -193,11 +193,13 @@ export default {
   components: {
     Navbar,
   },
-  method: {
+  methods: {
     async getTaskById() {
       try {
         this.id = this.$route.params.id;
-        const resp = await this.$be_http.get(`/api/v1/task/get/${this.id}`);
+        const resp = await this.$be_http.get(`/api/v1/task/get/` + this.id, {
+          withCredentials: true,
+        });
         const data = resp.data;
         this.task = {
           id: data.id,
@@ -209,6 +211,18 @@ export default {
           user_id: data.user_id,
         };
       } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async updateTask(id) {
+      try {
+        await this.$be_http.put(`/api/v1/task/update/${id}`, this.task, {
+          withCredentials: true,
+        });
+        this.$router.push(`/client/task`);
+      } catch (error) {
+        alert("Please fill in all available fields");
         console.log(error);
       }
     },
