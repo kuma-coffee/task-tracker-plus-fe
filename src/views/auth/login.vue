@@ -54,6 +54,7 @@
 
 <script>
 import VueCookies from "vue-cookies";
+import axios from "axios";
 
 export default {
   data() {
@@ -76,8 +77,8 @@ export default {
         this.$router.push({
           name: "Dashboard",
           params: { email: this.user.email },
-          withCredentials: true,
         });
+        axios.defaults.withCredentials = true;
       } catch (error) {
         this.$router.push(`/client/modal?status=error&message=${error}`);
       }

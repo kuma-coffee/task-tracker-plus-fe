@@ -173,6 +173,7 @@
 
 <script>
 import Navbar from "../../components/navbar.vue";
+import VueCookies from "vue-cookies";
 
 export default {
   data() {
@@ -229,6 +230,7 @@ export default {
   },
   mounted() {
     this.getTaskById();
+    console.log(VueCookies.get("session_token"));
   },
 };
 </script>
