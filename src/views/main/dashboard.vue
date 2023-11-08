@@ -71,6 +71,7 @@
 
 <script>
 import Navbar from "../../components/navbar.vue";
+import VueCookies from "vue-cookies";
 
 export default {
   props: ["email"],
@@ -106,6 +107,7 @@ export default {
     },
   },
   mounted() {
+    console.log(VueCookies.get("session_token"));
     this.getUserTaskCategories();
   },
 };
