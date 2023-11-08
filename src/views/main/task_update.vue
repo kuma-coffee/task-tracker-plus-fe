@@ -229,8 +229,8 @@ export default {
     },
   },
   mounted() {
-    this.getTaskById();
     console.log(VueCookies.get("session_token"));
+    this.getTaskById();
   },
 };
 </script>
