@@ -2,10 +2,11 @@ import { createApp } from "vue"; // Menggunakan "createApp" dari Vue 3
 import App from "./App.vue";
 import router from "./router/index";
 import axios from "axios";
-import VueCookies from "vue-cookies";
+import config from "../config.dev"; // Gunakan config.prod untuk produksi
+const BASE_URL = config.BASE_URL;
 
 var beAPI = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: BASE_URL,
 });
 
 export { beAPI };
