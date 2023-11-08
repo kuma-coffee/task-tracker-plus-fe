@@ -59,7 +59,6 @@ export default {
   data() {
     return {
       user: {
-        email: "",
         password: "",
       },
     };
@@ -74,8 +73,9 @@ export default {
 
         VueCookies.set("session_token", resp.data.token, "1h", "", null, false);
 
-        this.$router.push("/client/dashboard", {
-          cookie: "session_token=" + resp.data.token,
+        this.$router.push({
+          name: "Dashboard",
+          params: { email: this.user.email },
           withCredentials: true,
         });
       } catch (error) {

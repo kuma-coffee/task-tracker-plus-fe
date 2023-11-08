@@ -27,39 +27,46 @@ const routes = [
     component: Register,
   },
   {
-    path: "/client/dashboard",
+    path: "/client/dashboard/",
     name: "Dashboard",
     component: Dashboard,
+    props: true,
   },
   {
     path: "/client/task",
     name: "Task",
     component: Task,
+    props: true,
   },
   {
     path: "/client/task/update/:id",
     name: "Task Update",
     component: TaskUpdate,
+    props: true,
   },
   {
     path: "/client/task/category/:id",
     name: "Task Category",
     component: TaskCategory,
+    props: true,
   },
   {
     path: "/client/category",
     name: "Category",
     component: Category,
+    props: true,
   },
   {
     path: "/client/category/update/:id",
     name: "Category Update",
     component: CategoryUpdate,
+    props: true,
   },
   {
     path: "/client/modal",
     name: "Modal",
     component: Modal,
+    props: true,
   },
 ];
 
