@@ -130,3 +130,5 @@ dist
 .pnp.*
 
 *config.dev.js
+# Local Netlify folder
+.netlify

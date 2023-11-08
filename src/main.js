@@ -2,10 +2,9 @@ import { createApp } from "vue"; // Menggunakan "createApp" dari Vue 3
 import App from "./App.vue";
 import router from "./router/index";
 import axios from "axios";
-const BASE_URL = process.env.BASE_URL;
 
 var beAPI = axios.create({
-  baseURL: BASE_URL,
+  baseURL: "https://task-tracker-plus-be.onrender.com/",
 });
 
 export { beAPI };
