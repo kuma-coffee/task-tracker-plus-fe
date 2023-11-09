@@ -88,9 +88,6 @@ export default {
       // const token = VueCookies.get("session_token");
       const resp = await this.$be_http.get("/api/v1/user/tasks", {
         withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${VueCookies.get("session_token")}`,
-        },
       });
       this.user_task_categories = [];
       if (resp.data && Array.isArray(resp.data)) {
