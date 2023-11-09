@@ -10,6 +10,8 @@
   to = "/index.html"
   status = 200
 
-[headers]
-  Access-Control-Allow-Origin = "https://task-tracker-plus-web.netlify.app"
-  Access-Control-Allow-Credentials = "true"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "https://task-tracker-plus-web.netlify.app"
+    Access-Control-Allow-Credentials = "true"
