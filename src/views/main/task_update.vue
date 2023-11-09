@@ -173,6 +173,7 @@
 
 <script>
 import Navbar from "../../components/navbar.vue";
+import VueCookies from "vue-cookies";
 
 export default {
   data() {
@@ -199,6 +200,9 @@ export default {
         this.id = this.$route.params.id;
         const resp = await this.$be_http.get(`/api/v1/task/get/` + this.id, {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${VueCookies.get("session_token")}`,
+          },
         });
         const data = resp.data;
         this.task = {
@@ -219,6 +223,9 @@ export default {
       try {
         await this.$be_http.put(`/api/v1/task/update/${id}`, this.task, {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${VueCookies.get("session_token")}`,
+          },
         });
         this.$router.push(`/client/task`);
       } catch (error) {

@@ -247,6 +247,9 @@ export default {
       try {
         const resp = await this.$be_http.get("/api/v1/user/logout", {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${VueCookies.get("session_token")}`,
+          },
         });
 
         VueCookies.set("session_token", "", -1, "", null, false);

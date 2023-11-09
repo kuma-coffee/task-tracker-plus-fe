@@ -85,6 +85,7 @@
 
 <script>
 import Navbar from "../../components/navbar.vue";
+import VueCookies from "vue-cookies";
 
 export default {
   data() {
@@ -108,6 +109,9 @@ export default {
           `/api/v1/category/get/${this.id}`,
           {
             withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${VueCookies.get("session_token")}`,
+            },
           }
         );
         const data = resp.data;
@@ -127,6 +131,9 @@ export default {
           this.category,
           {
             withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${VueCookies.get("session_token")}`,
+            },
           }
         );
         this.$router.push(`/client/category`);

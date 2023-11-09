@@ -119,6 +119,7 @@
 
 <script>
 import Navbar from "../../components/navbar.vue";
+import VueCookies from "vue-cookies";
 
 export default {
   data() {
@@ -137,6 +138,9 @@ export default {
     async getCategoryList() {
       const resp = await this.$be_http.get(`/api/v1/category/list`, {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${VueCookies.get("session_token")}`,
+        },
       });
       this.categories = [];
       if (resp.data && Array.isArray(resp.data)) {
@@ -153,6 +157,9 @@ export default {
       try {
         await this.$be_http.post(`/api/v1/category/add`, this.form, {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${VueCookies.get("session_token")}`,
+          },
         });
         await this.getCategoryList();
       } catch (error) {
@@ -168,6 +175,9 @@ export default {
     async deleteCategory(id) {
       await this.$be_http.delete(`/api/v1/category/delete/${id}`, {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${VueCookies.get("session_token")}`,
+        },
       });
       await this.getCategoryList();
     },

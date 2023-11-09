@@ -202,6 +202,7 @@
 
 <script>
 import Navbar from "../../components/navbar.vue";
+import VueCookies from "vue-cookies";
 
 export default {
   data() {
@@ -227,6 +228,9 @@ export default {
     async getTaskListByCategory() {
       const resp = await this.$be_http.get(`/api/v1/task/category/${this.id}`, {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${VueCookies.get("session_token")}`,
+        },
       });
       this.taskCategoryList = [];
       if (resp.data && Array.isArray(resp.data)) {
@@ -243,6 +247,9 @@ export default {
     async getCategoryList() {
       const resp = await this.$be_http.get(`/api/v1/category/list`, {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${VueCookies.get("session_token")}`,
+        },
       });
       this.categories = [];
       if (resp.data && Array.isArray(resp.data)) {
@@ -259,6 +266,9 @@ export default {
       try {
         await this.$be_http.post(`/api/v1/task/add`, this.form, {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${VueCookies.get("session_token")}`,
+          },
         });
         await this.getTaskList();
         await this.getCategoryList();

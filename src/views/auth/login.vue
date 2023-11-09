@@ -72,15 +72,7 @@ export default {
           password: this.user.password,
         });
 
-        VueCookies.set(
-          "session_token",
-          resp.data.token,
-          "1h",
-          "",
-          null,
-          false,
-          { sameSite: "None" }
-        );
+        VueCookies.set("session_token", resp.data.token, "1h", "", null, false);
 
         this.$router.push({
           name: "Dashboard",
